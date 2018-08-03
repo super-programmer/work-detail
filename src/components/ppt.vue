@@ -24,6 +24,7 @@ export default {
         _this.fullscreen()
       } else if (e.data === 'exitfullscreen') {
         _this.exitFullScreen()
+      }else{
       }
     }, false)
   },

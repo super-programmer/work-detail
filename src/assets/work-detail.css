@@ -28,7 +28,21 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-
+.font-size16{
+  font-size:16px;
+}
+.font-size24{
+  position:relative;
+  top:-6px;
+  margin:0 2px;
+  font-size:24px;
+}
+.font-color--green{
+  color:#14c75e;
+}
+.font-color--orange{
+  color:#ff3356;
+}
 .bg-contain {
   background-size: contain;
   background-position: center;
@@ -911,7 +925,6 @@
   padding: 24px 20px;
   background: #fff;
   border-radius: 4px;
-  margin-bottom: 20px;
 }
 
 .m-res-info__subtitle {
@@ -938,7 +951,9 @@
 .c-res-info__profile__line span {
   color: #666;
 }
-
+span.c-res-info__profile__line-detail{
+  color:#999;
+}
 .c-res-info__profile__title {
   float: left;
   width: 42px;
@@ -1198,12 +1213,20 @@
 }
 
 .c-analy-tit {
+  max-width:400px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
   font-weight: bold;
   font-size: 18px;
   color: #333;
 }
 
 .c-analy-tit--secon {
+  max-width:400px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
   font-size: 14px;
   color: #666;
 }
@@ -1236,14 +1259,13 @@
 
 .c-analy-heaher__lookdetail {
   float: left;
-  width: 130px;
+  min-width: 140px;
   height: 90px;
   padding-top: 32px;
   text-align: center;
 }
 
 .c-analy-heaher__lookdetail--num {
-  font-weight: bold;
   font-size: 36px;
   height: 34px;
   line-height: 34px;
@@ -1254,6 +1276,7 @@
 }
 
 .c-analy-heaher__lookdetail--tips {
+  margin-top:4px;
   font-size: 14px;
   color: #333;
 }

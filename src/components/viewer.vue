@@ -62,13 +62,9 @@ export default {
         _this.exitFullScreen()
       }
     }
-
-
     /* 渲染数据 */
     _this.getDocData(fileId)
-
-    /*针对图片做特殊处理*/
-
+    /*// /!*针对图片做特殊处理*!/
     let timer = ''
     let number = 0
     timer = setInterval(() => {
@@ -78,7 +74,7 @@ export default {
         number = 0
         this.$emit('postData')
       }
-    },1000)
+    },1000)*/
   },
   components: {
     Img: img,
@@ -148,18 +144,19 @@ export default {
       }
       setTimeout(function () {
         document.getElementById('filebox-con').scrollTop = _this.position || 3
-        console.log(document.getElementById('filebox-con').scrollTop)
       }, 100)
     },
     // 全屏事件
     fullscreen: function (ev) {
       let _this = this
       _this.$data.clicked = !_this.$data.clicked
+      document.body.style.overflow = 'hidden'
       ev.stopPropagation()
       ev.preventDefault()
     },
     // 退出全屏
     exitFullScreen: function (ev) {
+      document.body.style.overflow = 'auto'
       this.$data.clicked = false
     },
     // 多页数据保存
