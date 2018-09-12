@@ -1,5 +1,5 @@
 <template>
-  <div :class="clicked ? 'fileBox fileBox--fullscreen' : 'fileBox'" id="fullbox" @click="exitFullScreen">
+  <div :class="clicked ? 'fileBox fileBox--fullscreen' : 'fileBox'" id="fullbox" @click="exitFullScreen" v-if="loadedOver">
     <div class="filebox-con" :style="video ? 'overflow:hidden;' : ''" @scroll="domscroll" id="filebox-con">
       <Img v-if="img" :src="src" :filedata="filedata"></Img>
       <Doc v-if="doc" :pages="pages" :filedata="filedata"></Doc>
@@ -14,6 +14,18 @@
     <div class="f-scrollbar"></div>
   </div>
   </div>
+  <div class="fileBox" v-else>
+    <div class="loadEffect">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
 </template>
 <script>
 import axios from 'axios'
@@ -26,6 +38,7 @@ export default {
   props: ['fileId', 'position'],
   data () {
     return {
+      loadedOver: false,
       filedata: {
         type: '',
         start: this.position || 0,
@@ -103,6 +116,7 @@ export default {
             _this.$data.tipsflag = true
             _this.$data.tips = '转换失败'
           }
+          this.loadedOver = true
         } else {
 
         }

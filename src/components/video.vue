@@ -1,9 +1,6 @@
 <template>
   <div class="video" style="width:100%;height:100%;">
-    <div class="install-flash">
-      <p>您没有安装flash插件，无法播放视频</p>
-      <p>请<a href="javascript:;" @click="getFlashLink">点击此处下载安装最新的flash插件</a></p>
-    </div>
+    <div v-html="flashHtml"></div>
   </div>
 </template>
 <script>
@@ -16,7 +13,8 @@ export default {
       type: `${this.filedata.type}`,
       name: `${this.filedata.name}`,
       poster: `${this.filedata.baseUrl}${this.filedata.poster}`,
-      timer: ''
+      timer: '',
+      flashHtml:''
     }
   },
   mounted () {
@@ -24,6 +22,11 @@ export default {
     /*只有安装过flash初始化*/
     if(fls.f) {
       this.initPlayer()
+    }else{
+      this.flashHtml = `<div class="install-flash">
+      <p>您没有安装flash插件，无法播放视频</p>
+      <p>请<a href="javascript:;" @click="getFlashLink">点击此处下载安装最新的flash插件</a></p>
+    </div>`
     }
   },
   methods: {

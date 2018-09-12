@@ -47,6 +47,7 @@
               <p class="c-analy-tips">
           <span class="c-analy-tip">
               布置班级：{{taskData.className}}
+              <span v-if="taskData.groupName"><span v-if="taskData.groupName.length > 0"> - {{taskData.groupName.join('、')}}</span></span>
           </span>
                 <span class="c-analy-tip">
               截止时间：{{taskData.finalOn}}
@@ -162,6 +163,8 @@
           e.returnValue = false;
           return false;
         }*/
+      }else{
+        document.title = '查看作业'
       }
     },
     methods: {
@@ -190,7 +193,12 @@
                   }
                 })
               }
-
+              _this.taskData.groupName = [];
+              if (_this.taskData.groups) {
+                _this.taskData.groups.map((item) => {
+                  _this.taskData.groupName.push(item.groupName)
+                })
+              }
               /*转换任务类型*/
               switch(this.taskData.type){
                 case 1:
@@ -219,6 +227,13 @@
               _this.position = data.position
               _this.setOption.timestamp = data.timestamp
               _this.getTaskDetail(data)
+              _this.taskData.groupName = [];
+              if (data.groups) {
+                data.groups.map((item) => {
+                  _this.taskData.groupName.push(item.groupName)
+                })
+              }
+              console.log(_this.taskData.groupName.length)
               switch (data.resType) {
                 case 3:  //課件
                   this.getResource(data);
