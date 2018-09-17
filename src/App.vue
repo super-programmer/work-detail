@@ -19,7 +19,8 @@
                 <p class="c-analy-heaher__lookdetail--num font-color--green">
 
                 <span v-if="taskData.usedTime >= 3600">
-                  {{parseInt(taskData.usedTime/3600)}}<span class="font-size24">:</span>{{parseInt((taskData.usedTime%3600)/60)}}<span class="font-size24">:</span>{{((taskData.usedTime%3600)%60).toFixed(0)}}
+                  {{parseInt(taskData.usedTime/3600)}}<span class="font-size24">:</span>{{parseInt((taskData.usedTime%3600)/60)}}<span
+                  class="font-size24">:</span>{{((taskData.usedTime%3600)%60).toFixed(0)}}
                 </span>
                   <span v-else>
                     {{parseInt(taskData.usedTime/60)}}<sup>'</sup>{{(taskData.usedTime%60).toFixed(0)}}<sup>''</sup>
@@ -30,7 +31,8 @@
                 </p>
               </div>
               <div class="c-analy-heaher__lookdetail">
-                <p class="c-analy-heaher__lookdetail--num font-color--orange">{{taskData.watchCnt}}<span class="font-size16">次</span>
+                <p class="c-analy-heaher__lookdetail--num font-color--orange">{{taskData.watchCnt}}<span
+                  class="font-size16">次</span>
                 </p>
                 <p class="c-analy-heaher__lookdetail--tips">
                   观看次数
@@ -96,8 +98,9 @@
   import axios from 'axios'
   import moment from 'moment'
   import viewer from './components/viewer'
-  import { Header } from 'ygui';
+  import {Header} from 'ygui';
   import $ from 'jquery';
+
   export default {
     name: 'App',
     data() {
@@ -105,14 +108,14 @@
         renderData: {},                                          //页面dom数据
         size: 0,
         taskClassName: '',
-        workId:'',                                                 //作业id
-        taskId:'',                                                 //任务id用于老师
-        resType:'',                                                //资源类型微课课件
+        workId: '',                                                 //作业id
+        taskId: '',                                                 //任务id用于老师
+        resType: '',                                                //资源类型微课课件
         fileId: '',                                                //fileId
         position: 0,                                               //浏览记录位置
         sbjName: '',                                               //学科名称
         stgName: '',                                               //学段name
-        taskData:{},                                               //taskdetail
+        taskData: {},                                               //taskdetail
         setOption: {
           "duration": 0,  //观看时长
           "position": 0,  //最后位置
@@ -122,12 +125,12 @@
       }
     },
     created() {
-      let  _this = this;
-       _this.workId = _this.GetRequest().workId;
-       _this.userId = _this.GetRequest().userId;
-       _this.taskId = _this.GetRequest().taskId;
-       _this.resType = _this.GetRequest().resType;
-      if(_this.workId || _this.taskId){
+      let _this = this;
+      _this.workId = _this.GetRequest().workId;
+      _this.userId = _this.GetRequest().userId;
+      _this.taskId = _this.GetRequest().taskId;
+      _this.resType = _this.GetRequest().resType;
+      if (_this.workId || _this.taskId) {
         _this.getWorkDetail()
       }
     },
@@ -135,35 +138,35 @@
       let _this = this
       let status = 0;
       /*只有学生打开才保存记录*/
-      if(_this.resType === undefined){
-       /* /!*兼容ie9*!/
-        if(typeof (history.pushState) === 'function'){
-          window.addEventListener('load', function() {
-              let path = location.href.replace(/#.*$/, '') + '#!';
-            // 将追加了hash的链接推入history中
-            history.pushState({path: path},path);
-            status = 1;
-          });
-          window.addEventListener('popstate', function(ev){
-            if (status == 1) {
-              status = 0;
-              _this.setWorkDetail();
-            }
-          });
-        }*/
-        window.onbeforeunload = function(e){
+      if (_this.resType === undefined) {
+        /* /!*兼容ie9*!/
+         if(typeof (history.pushState) === 'function'){
+           window.addEventListener('load', function() {
+               let path = location.href.replace(/#.*$/, '') + '#!';
+             // 将追加了hash的链接推入history中
+             history.pushState({path: path},path);
+             status = 1;
+           });
+           window.addEventListener('popstate', function(ev){
+             if (status == 1) {
+               status = 0;
+               _this.setWorkDetail();
+             }
+           });
+         }*/
+        window.onbeforeunload = function (e) {
           _this.setWorkDetail();
           e = e || window.event;
           e.returnValue = false;
           return false;
         }
-       /* window.onunload = function(e){
-          _this.setWorkDetail();
-          e = e || window.event;
-          e.returnValue = false;
-          return false;
-        }*/
-      }else{
+        /* window.onunload = function(e){
+           _this.setWorkDetail();
+           e = e || window.event;
+           e.returnValue = false;
+           return false;
+         }*/
+      } else {
         document.title = '查看作业'
       }
     },
@@ -180,14 +183,14 @@
         }, error => {
           return Promise.reject(error)
         })
-        if(_this.taskId){
+        if (_this.taskId) {
           axios.get(`https://api.yunguxt.com/work/home/tasks/${_this.taskId}/watch`).then(res => {
             if (res) {
               _this.taskData = res.data
               /*遍历学生名单拿到对应信息*/
-              if( _this.userId){
-                _this.taskData.users.map((item) =>{
-                  if(item.userId == _this.userId){
+              if (_this.userId) {
+                _this.taskData.users.map((item) => {
+                  if (item.userId == _this.userId) {
                     _this.taskData.watchCnt = item.watchCnt
                     _this.taskData.usedTime = item.usedTime
                   }
@@ -200,7 +203,7 @@
                 })
               }
               /*转换任务类型*/
-              switch(this.taskData.type){
+              switch (this.taskData.type) {
                 case 1:
                   _this.taskClassName = 'c-analy-heaher__icon--pre'
                   break
@@ -220,7 +223,7 @@
               _this.getResource(_this.taskData);
             }
           })
-        }else{
+        } else {
           axios.get(`https://api.yunguxt.com/work/home/watch/${_this.workId}/starting`).then(res => {
             if (res) {
               let data = res.data
@@ -233,7 +236,6 @@
                   _this.taskData.groupName.push(item.groupName)
                 })
               }
-              console.log(_this.taskData.groupName.length)
               switch (data.resType) {
                 case 3:  //課件
                   this.getResource(data);
@@ -246,33 +248,33 @@
         }
       },
       /*获取任务详情*/
-      getTaskDetail: function(data) {
+      getTaskDetail: function (data) {
         axios.get(`https://api.yunguxt.com/work/home/works?scope=all&pageSize=100000`).then(res => {
           if (res) {
             res.data.items.map((item) => {
-              if(item.taskId === data.taskId){
+              if (item.taskId === data.taskId) {
                 this.taskData = item
                 this.taskData.watchCnt = data.watchCnt
                 this.taskData.usedTime = data.usedTime
-                if(this.taskData.watchCnt >= 1){
+                if (this.taskData.watchCnt >= 1) {
                   document.title = '作业报告'
                 }
               }
             })
             /*转换任务类型*/
-            switch(this.taskData.type){
+            switch (this.taskData.type) {
               case 1:
                 this.taskClassName = 'c-analy-heaher__icon--pre'
-                    break
+                break
               case 2:
                 this.taskClassName = 'c-analy-heaher__icon--oncourse'
-                    break
+                break
               case 3:
                 this.taskClassName = 'c-analy-heaher__icon--after'
-                    break
+                break
               case 4:
                 this.taskClassName = 'c-analy-heaher__icon--test'
-                    break
+                break
             }
             this.taskData.pubOn = this.setTime(this.taskData.pubOn)
             this.taskData.finalOn = this.setTime(this.taskData.finalOn)
@@ -317,25 +319,25 @@
         }
         let token = window.localStorage['access_token'];
         $.ajax({
-          async:false,
+          async: false,
           type: "post",
-          url:`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`,
+          url: `https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`,
           headers: {
             "Accept": 'application/json, text/plain, */*',
             "Authorization": token
           },
           contentType: "application/json; charset=utf-8",
-          data:JSON.stringify(this.setOption),
-          datatype:'json',
-          success:()=>{
+          data: JSON.stringify(this.setOption),
+          datatype: 'json',
+          success: () => {
             window.history.go(-1);
           }
         })
-       /* axios.post(`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`, this.setOption).then(res => {
-          if(num === 10){
-          }
-          window.history.go(-1);
-        })*/
+        /* axios.post(`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`, this.setOption).then(res => {
+           if(num === 10){
+           }
+           window.history.go(-1);
+         })*/
         return "44"
       },
       setData: function () {
@@ -368,7 +370,7 @@
         var theRequest = new Object();
         if (url.indexOf("?") != -1) {
           var str = url.substr(1),
-          strs = str.split("&");
+            strs = str.split("&");
           for (var i = 0; i < strs.length; i++) {
             theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
           }
@@ -376,7 +378,7 @@
         return theRequest;
       },
       /*时间转换*/
-      setTime: function(data) {
+      setTime: function (data) {
         return moment(data).format('YYYY-MM-DD HH:mm:ss')
       },
     },
@@ -389,27 +391,31 @@
 <style>
   @import "assets/work-detail.css";
   @import "assets/viewer.css";
-  .c-analy-loadbox{
-    width:100%;
-    height:600px;
-    margin:10px auto;
-    background:#fff;
-    border:1px solid #eee;
+
+  .c-analy-loadbox {
+    width: 100%;
+    height: 600px;
+    margin: 10px auto;
+    background: #fff;
+    border: 1px solid #eee;
   }
+
   .loadEffect {
     width: 100px;
     height: 100px;
     margin: 0 auto;
-    margin-top:200px;
+    margin-top: 200px;
     position: relative;
   }
-  .loadEffect div{
+
+  .loadEffect div {
     width: 100%;
     height: 100%;
     position: absolute;
     -webkit-animation: load 2.08s linear infinite;
   }
-  .loadEffect div span{
+
+  .loadEffect div span {
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -420,42 +426,47 @@
     margin-top: -10px;
     margin-left: -10px;
   }
-  @-webkit-keyframes load{
-    0%{
+
+  @-webkit-keyframes load {
+    0% {
       -webkit-transform: rotate(0deg);
     }
-    10%{
+    10% {
       -webkit-transform: rotate(45deg);
     }
-    50%{
+    50% {
       opacity: 1;
       -webkit-transform: rotate(160deg);
     }
-    62%{
+    62% {
       opacity: 0;
     }
-    65%{
+    65% {
       opacity: 0;
       -webkit-transform: rotate(200deg);
     }
-    90%{
+    90% {
       -webkit-transform: rotate(340deg);
     }
-    100%{
+    100% {
       -webkit-transform: rotate(360deg);
     }
 
   }
-  .loadEffect div:nth-child(1){
-    -webkit-animation-delay:0.2s;
+
+  .loadEffect div:nth-child(1) {
+    -webkit-animation-delay: 0.2s;
   }
-  .loadEffect div:nth-child(2){
-    -webkit-animation-delay:0.4s;
+
+  .loadEffect div:nth-child(2) {
+    -webkit-animation-delay: 0.4s;
   }
-  .loadEffect div:nth-child(3){
-    -webkit-animation-delay:0.6s;
+
+  .loadEffect div:nth-child(3) {
+    -webkit-animation-delay: 0.6s;
   }
-  .loadEffect div:nth-child(4){
-    -webkit-animation-delay:0.8s;
+
+  .loadEffect div:nth-child(4) {
+    -webkit-animation-delay: 0.8s;
   }
 </style>

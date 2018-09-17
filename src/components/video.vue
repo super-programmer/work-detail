@@ -98,6 +98,7 @@ export default {
           flashVersion = parseInt(VSwf.split(" ")[1].split(",")[0]);
         }
       } else {
+        console.log(navigator.plugins["Shockwave Flash"])
         if(navigator.plugins && navigator.plugins.length > 0) {
           var swf = navigator.plugins["Shockwave Flash"];
           if(swf) {
