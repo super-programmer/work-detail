@@ -23,10 +23,13 @@ export default {
     if(fls.f) {
       this.initPlayer()
     }else{
+      window.getFlashLink = function(){
+        window.open('https://get.adobe.com/cn/flashplayer/')
+      }
       this.flashHtml = `<div class="install-flash">
       <p>您没有安装flash插件，无法播放视频</p>
-      <p>请<a href="javascript:;" @click="getFlashLink">点击此处下载安装最新的flash插件</a></p>
-    </div>`
+      <p>请<a href="javascript:;" onclick="getFlashLink()">点击此处下载安装最新的flash插件</a></p>
+      </div>`
     }
   },
   methods: {
@@ -98,7 +101,6 @@ export default {
           flashVersion = parseInt(VSwf.split(" ")[1].split(",")[0]);
         }
       } else {
-        console.log(navigator.plugins["Shockwave Flash"])
         if(navigator.plugins && navigator.plugins.length > 0) {
           var swf = navigator.plugins["Shockwave Flash"];
           if(swf) {
@@ -119,7 +121,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .install-flash{
   margin-top:200px;
   text-align:center;
