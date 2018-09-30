@@ -34,10 +34,10 @@ export default {
   },
   methods: {
     initPlayer () {
-      // window.timeUpdateHandler = ''
-     /* window.playHandler = ''
+      window.timeUpdateHandler = ''
+      window.playHandler = ''
       window.pauseHandler = ''
-      window.loadedmetadata = ''*/
+      window.loadedmetadata = ''
       window.timer = ''
       let playertime = ''
       let _this = this
@@ -61,30 +61,30 @@ export default {
           video: `${_this.src}`, // 视频地址
           loaded: 'loadedHandler1'
         }
-        function loadedmetadata() {
+        loadedmetadata = function loadedmetadata() {
           let metaData = player.getMetaDate()
           playertime = metaData['duration']
         }
-        window.loadedmetadata = loadedmetadata
-        function timeUpdateHandler (time) {
+        // window.loadedmetadata = loadedmetadata
+        timeUpdateHandler = function timeUpdateHandler (time) {
           videoData.position = time
           if (time >= (0.8 * playertime)) {
             videoData.tail = true
           }
           _this.$emit('setData', videoData)
         }
-        window.timeUpdateHandler = timeUpdateHandler
-        function playHandler () {
+        // window.timeUpdateHandler = timeUpdateHandler
+        playHandler = function playHandler () {
           clearInterval(_this.timer)
           _this.timer = setInterval(function () {
             videoData.duration += 0.1
           }, 100)
         }
-        window.playHandler = playHandler
-        function pauseHandler () {
+        // window.playHandler = playHandler
+        pauseHandler = function pauseHandler () {
           clearInterval(_this.timer)
         }
-        window.pauseHandler = pauseHandler
+        // window.pauseHandler = pauseHandler
         window.player = new ckplayer(videoObject)
         window.loadedHandler1 = function () {
           player.addListener('play', playHandler) // 监听暂停播放
