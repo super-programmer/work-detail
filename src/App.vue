@@ -95,51 +95,51 @@
   </div>
 </template>
 <script>
-  import axios from 'axios'
-  import moment from 'moment'
-  import viewer from './components/viewer'
-  import {Header} from 'ygui';
-  import $ from 'jquery';
+import axios from 'axios'
+import moment from 'moment'
+import viewer from './components/viewer'
+import {Header} from 'ygui'
+import $ from 'jquery'
 
-  export default {
-    name: 'App',
-    data() {
-      return {
-        renderData: {},                                          //页面dom数据
-        size: 0,
-        taskClassName: '',
-        workId: '',                                                 //作业id
-        taskId: '',                                                 //任务id用于老师
-        resType: '',                                                //资源类型微课课件
-        fileId: '',                                                //fileId
-        position: 0,                                               //浏览记录位置
-        sbjName: '',                                               //学科名称
-        stgName: '',                                               //学段name
-        taskData: {},                                               //taskdetail
-        setOption: {
-          "duration": 0,  //观看时长
-          "position": 0,  //最后位置
-          "tail": true,   //是否看过尾部
-          "timestamp": 0  //开始时间
-        }
+export default {
+  name: 'App',
+  data () {
+    return {
+      renderData: {}, // 页面dom数据
+      size: 0,
+      taskClassName: '',
+      workId: '', // 作业id
+      taskId: '', // 任务id用于老师
+      resType: '', // 资源类型微课课件
+      fileId: '', // fileId
+      position: 0, // 浏览记录位置
+      sbjName: '', // 学科名称
+      stgName: '', // 学段name
+      taskData: {}, // taskdetail
+      setOption: {
+        'duration': 0, // 观看时长
+        'position': 0, // 最后位置
+        'tail': true, // 是否看过尾部
+        'timestamp': 0 // 开始时间
       }
-    },
-    created() {
-      let _this = this;
-      _this.workId = _this.GetRequest().workId;
-      _this.userId = _this.GetRequest().userId;
-      _this.taskId = _this.GetRequest().taskId;
-      _this.resType = _this.GetRequest().resType;
-      if (_this.workId || _this.taskId) {
-        _this.getWorkDetail()
-      }
-    },
-    mounted() {
-      let _this = this
-      let status = 0;
-      /*只有学生打开才保存记录*/
-      if (_this.resType === undefined) {
-        /* /!*兼容ie9*!/
+    }
+  },
+  created () {
+    let _this = this
+    _this.workId = _this.GetRequest().workId
+    _this.userId = _this.GetRequest().userId
+    _this.taskId = _this.GetRequest().taskId
+    _this.resType = _this.GetRequest().resType
+    if (_this.workId || _this.taskId) {
+      _this.getWorkDetail()
+    }
+  },
+  mounted () {
+    let _this = this
+    let status = 0
+    /* 只有学生打开才保存记录 */
+    if (_this.resType === undefined) {
+      /* /!*兼容ie9*!/
          if(typeof (history.pushState) === 'function'){
            window.addEventListener('load', function() {
                let path = location.href.replace(/#.*$/, '') + '#!';
@@ -153,245 +153,244 @@
                _this.setWorkDetail();
              }
            });
-         }*/
-        window.onbeforeunload = function (e) {
-          _this.setWorkDetail();
-          e = e || window.event;
-          e.returnValue = false;
-          return false;
-        }
-        /* window.onunload = function(e){
+         } */
+      window.onbeforeunload = function (e) {
+        _this.setWorkDetail()
+        e = e || window.event
+        e.returnValue = false
+        return false
+      }
+      /* window.onunload = function(e){
            _this.setWorkDetail();
            e = e || window.event;
            e.returnValue = false;
            return false;
-         }*/
-      } else {
-        document.title = '查看作业'
-      }
-    },
-    methods: {
-      //进入页面拉去数据
-      getWorkDetail: function () {
-        let _this = this
-        axios.interceptors.request.use(config => {
-          let token = window.localStorage['access_token'];
-          if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.Authorization = token;
-          }
-          return config
-        }, error => {
-          return Promise.reject(error)
-        })
-        if (_this.taskId) {
-          axios.get(`https://api.yunguxt.com/work/home/tasks/${_this.taskId}/watch`).then(res => {
-            if (res) {
-              _this.taskData = res.data
-              /*遍历学生名单拿到对应信息*/
-              if (_this.userId) {
-                _this.taskData.users.map((item) => {
-                  if (item.userId == _this.userId) {
-                    _this.taskData.watchCnt = item.watchCnt
-                    _this.taskData.usedTime = item.usedTime
-                  }
-                })
-              }
-              _this.taskData.groupName = [];
-              if (_this.taskData.groups) {
-                _this.taskData.groups.map((item) => {
-                  _this.taskData.groupName.push(item.groupName)
-                })
-              }
-              /*转换任务类型*/
-              switch (this.taskData.type) {
-                case 1:
-                  _this.taskClassName = 'c-analy-heaher__icon--pre'
-                  break
-                case 2:
-                  _this.taskClassName = 'c-analy-heaher__icon--oncourse'
-                  break
-                case 3:
-                  _this.taskClassName = 'c-analy-heaher__icon--after'
-                  break
-                case 4:
-                  _this.taskClassName = 'c-analy-heaher__icon--test'
-                  break
-              }
-              _this.taskData.pubOn = this.setTime(_this.taskData.pubOn)
-              _this.taskData.finalOn = this.setTime(_this.taskData.finalOn)
-              _this.taskData.resType = _this.resType
-              _this.getResource(_this.taskData);
-            }
-          })
-        } else {
-          axios.get(`https://api.yunguxt.com/work/home/watch/${_this.workId}/starting`).then(res => {
-            if (res) {
-              let data = res.data
-              _this.position = data.position
-              _this.setOption.timestamp = data.timestamp
-              _this.getTaskDetail(data)
-              _this.taskData.groupName = [];
-              if (data.groups) {
-                data.groups.map((item) => {
-                  _this.taskData.groupName.push(item.groupName)
-                })
-              }
-              switch (data.resType) {
-                case 3:  //課件
-                  this.getResource(data);
-                  break;
-                case 4:  //微课
-                  this.getResource(data);
-              }
-            }
-          })
+         } */
+    } else {
+      document.title = '查看作业'
+    }
+  },
+  methods: {
+    // 进入页面拉去数据
+    getWorkDetail: function () {
+      let _this = this
+      axios.interceptors.request.use(config => {
+        let token = window.localStorage['access_token']
+        if (token) { // 判断是否存在token，如果存在的话，则每个http header都加上token
+          config.headers.Authorization = token
         }
-      },
-      /*获取任务详情*/
-      getTaskDetail: function (data) {
-        axios.get(`https://api.yunguxt.com/work/home/works?scope=all&pageSize=100000`).then(res => {
+        return config
+      }, error => {
+        return Promise.reject(error)
+      })
+      if (_this.taskId) {
+        axios.get(`https://api.yunguxt.com/work/home/tasks/${_this.taskId}/watch`).then(res => {
           if (res) {
-            res.data.items.map((item) => {
-              if (item.taskId === data.taskId) {
-                this.taskData = item
-                this.taskData.watchCnt = data.watchCnt
-                this.taskData.usedTime = data.usedTime
-                if (this.taskData.watchCnt >= 1) {
-                  document.title = '作业报告'
+            _this.taskData = res.data
+            /* 遍历学生名单拿到对应信息 */
+            if (_this.userId) {
+              _this.taskData.users.map((item) => {
+                if (item.userId == _this.userId) {
+                  _this.taskData.watchCnt = item.watchCnt
+                  _this.taskData.usedTime = item.usedTime
                 }
-              }
-            })
-            /*转换任务类型*/
+              })
+            }
+            _this.taskData.groupName = []
+            if (_this.taskData.groups) {
+              _this.taskData.groups.map((item) => {
+                _this.taskData.groupName.push(item.groupName)
+              })
+            }
+            /* 转换任务类型 */
             switch (this.taskData.type) {
               case 1:
-                this.taskClassName = 'c-analy-heaher__icon--pre'
+                _this.taskClassName = 'c-analy-heaher__icon--pre'
                 break
               case 2:
-                this.taskClassName = 'c-analy-heaher__icon--oncourse'
+                _this.taskClassName = 'c-analy-heaher__icon--oncourse'
                 break
               case 3:
-                this.taskClassName = 'c-analy-heaher__icon--after'
+                _this.taskClassName = 'c-analy-heaher__icon--after'
                 break
               case 4:
-                this.taskClassName = 'c-analy-heaher__icon--test'
+                _this.taskClassName = 'c-analy-heaher__icon--test'
                 break
             }
-            this.taskData.pubOn = this.setTime(this.taskData.pubOn)
-            this.taskData.finalOn = this.setTime(this.taskData.finalOn)
+            _this.taskData.pubOn = this.setTime(_this.taskData.pubOn)
+            _this.taskData.finalOn = this.setTime(_this.taskData.finalOn)
+            _this.taskData.resType = _this.resType
+            _this.getResource(_this.taskData)
           }
         })
-      },
-      //根据资源id获取资源详情
-      getResource: function (data) {
-        let _url = data.resType == 3 ? `${data.resId}/courseware/${data.refId}` : `${data.resId}/microcourse/${data.refId}`
-        axios.get(`https://api.yunguxt.com/repository/resource/${_url}`).then(res => {
+      } else {
+        axios.get(`https://api.yunguxt.com/work/home/watch/${_this.workId}/starting`).then(res => {
           if (res) {
-            this.renderData = res.data
-            this.getStgSubData()
+            let data = res.data
+            _this.position = data.position
+            _this.setOption.timestamp = data.timestamp
+            _this.getTaskDetail(data)
+            _this.taskData.groupName = []
+            if (data.groups) {
+              data.groups.map((item) => {
+                _this.taskData.groupName.push(item.groupName)
+              })
+            }
+            switch (data.resType) {
+              case 3: // 課件
+                this.getResource(data)
+                break
+              case 4: // 微课
+                this.getResource(data)
+            }
           }
         })
-      },
-      //查询学段学科名称
-      getStgSubData: function () {
-        this.setData()
-        var _this = this
-        axios.get(`https://api.yunguxt.com/category/subject`).then(res => {
-          res.data.map(function (item) {
-            if (_this.renderData.content.sbjId === item.sbjId) {
-              _this.sbjName = item.sbjName
+      }
+    },
+    /* 获取任务详情 */
+    getTaskDetail: function (data) {
+      axios.get(`https://api.yunguxt.com/work/home/works?scope=all&pageSize=100000`).then(res => {
+        if (res) {
+          res.data.items.map((item) => {
+            if (item.taskId === data.taskId) {
+              this.taskData = item
+              this.taskData.watchCnt = data.watchCnt
+              this.taskData.usedTime = data.usedTime
+              if (this.taskData.watchCnt >= 1) {
+                document.title = '作业报告'
+              }
             }
           })
-        })
-        axios.get(`https://api.yunguxt.com/category/stage`).then(res => {
-          res.data.map(function (item) {
-            if (_this.renderData.content.stgId === item.stgId) {
-              _this.stgName = item.stgName
-            }
-          })
-        })
-      },
-      //关闭页面保存记录
-      setWorkDetail: function () {
-        if (document.getElementById('firamebox')) {
-          var _iframe = document.getElementById('firamebox').contentWindow;
-          var _div = _iframe.document.getElementById('PageIndex');
-          this.setOption.position = _div.innerHTML
+          /* 转换任务类型 */
+          switch (this.taskData.type) {
+            case 1:
+              this.taskClassName = 'c-analy-heaher__icon--pre'
+              break
+            case 2:
+              this.taskClassName = 'c-analy-heaher__icon--oncourse'
+              break
+            case 3:
+              this.taskClassName = 'c-analy-heaher__icon--after'
+              break
+            case 4:
+              this.taskClassName = 'c-analy-heaher__icon--test'
+              break
+          }
+          this.taskData.pubOn = this.setTime(this.taskData.pubOn)
+          this.taskData.finalOn = this.setTime(this.taskData.finalOn)
         }
-        let token = window.localStorage['access_token'];
-        $.ajax({
-          async: false,
-          type: "post",
-          url: `https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`,
-          headers: {
-            "Accept": 'application/json, text/plain, */*',
-            "Authorization": token
-          },
-          contentType: "application/json; charset=utf-8",
-          data: JSON.stringify(this.setOption),
-          datatype: 'json',
-          success: () => {
-            window.history.go(-1);
+      })
+    },
+    // 根据资源id获取资源详情
+    getResource: function (data) {
+      let _url = data.resType == 3 ? `${data.resId}/courseware/${data.refId}` : `${data.resId}/microcourse/${data.refId}`
+      axios.get(`https://api.yunguxt.com/repository/resource/${_url}`).then(res => {
+        if (res) {
+          this.renderData = res.data
+          this.getStgSubData()
+        }
+      })
+    },
+    // 查询学段学科名称
+    getStgSubData: function () {
+      this.setData()
+      var _this = this
+      axios.get(`https://api.yunguxt.com/category/subject`).then(res => {
+        res.data.map(function (item) {
+          if (_this.renderData.content.sbjId === item.sbjId) {
+            _this.sbjName = item.sbjName
           }
         })
-        /* axios.post(`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`, this.setOption).then(res => {
+      })
+      axios.get(`https://api.yunguxt.com/category/stage`).then(res => {
+        res.data.map(function (item) {
+          if (_this.renderData.content.stgId === item.stgId) {
+            _this.stgName = item.stgName
+          }
+        })
+      })
+    },
+    // 关闭页面保存记录
+    setWorkDetail: function () {
+      if (document.getElementById('firamebox')) {
+        var _iframe = document.getElementById('firamebox').contentWindow
+        var _div = _iframe.document.getElementById('PageIndex')
+        this.setOption.position = _div.innerHTML
+      }
+      let token = window.localStorage['access_token']
+      $.ajax({
+        async: false,
+        type: 'post',
+        url: `https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`,
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Authorization': token
+        },
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(this.setOption),
+        datatype: 'json',
+        success: () => {
+          window.history.go(-1)
+        }
+      })
+      /* axios.post(`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`, this.setOption).then(res => {
            if(num === 10){
            }
            window.history.go(-1);
-         })*/
-        return "44"
-      },
-      setData: function () {
-        this.fileId = this.renderData.content.fileId
-        //时间转换
-        if (this.renderData.content.modifiedOn) {
-          this.renderData.content.modifiedOn = moment(this.renderData.content.modifiedOn).format('YYYY-MM-DD HH:mm:ss')
-        }
-        //文件大小转换
-
-        if (this.renderData.content.size < 1024) {
-          this.renderData.content.size = `${this.renderData.content.size.toFixed(2)}B`
-        } else if (this.renderData.content.size >= 1024 && this.renderData.content.size < 1048576) {
-          this.renderData.content.size = `${(this.renderData.content.size / 1024).toFixed(2)}KB`
-        } else if (this.renderData.content.size >= 1048576 && this.renderData.content.size < 1073741824) {
-          this.renderData.content.size = `${(this.renderData.content.size / 1048576).toFixed(2)}M`
-        } else {
-          this.renderData.content.size = `${(this.renderData.content.size / 1073741824).toFixed(2)}GB`
-        }
-      },
-      //预览插件记录浏览数据
-      closeSet: function (value) {
-        this.setOption.duration = value.duration || ''
-        this.setOption.position = value.position || 0
-        this.setOption.tail = value.tail
-      },
-      //获取workid
-      GetRequest: function () {
-        var url = location.search; //获取url中"?"符后的字串
-        var theRequest = new Object();
-        if (url.indexOf("?") != -1) {
-          var str = url.substr(1),
-            strs = str.split("&");
-          for (var i = 0; i < strs.length; i++) {
-            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
-          }
-        }
-        return theRequest;
-      },
-      /*时间转换*/
-      setTime: function (data) {
-        return moment(data).format('YYYY-MM-DD HH:mm:ss')
-      },
+         }) */
+      return '44'
     },
-    components: {
-      viewer: viewer,
-      Header: Header
+    setData: function () {
+      this.fileId = this.renderData.content.fileId
+      // 时间转换
+      if (this.renderData.content.modifiedOn) {
+        this.renderData.content.modifiedOn = moment(this.renderData.content.modifiedOn).format('YYYY-MM-DD HH:mm:ss')
+      }
+      // 文件大小转换
+
+      if (this.renderData.content.size < 1024) {
+        this.renderData.content.size = `${this.renderData.content.size.toFixed(2)}B`
+      } else if (this.renderData.content.size >= 1024 && this.renderData.content.size < 1048576) {
+        this.renderData.content.size = `${(this.renderData.content.size / 1024).toFixed(2)}KB`
+      } else if (this.renderData.content.size >= 1048576 && this.renderData.content.size < 1073741824) {
+        this.renderData.content.size = `${(this.renderData.content.size / 1048576).toFixed(2)}M`
+      } else {
+        this.renderData.content.size = `${(this.renderData.content.size / 1073741824).toFixed(2)}GB`
+      }
+    },
+    // 预览插件记录浏览数据
+    closeSet: function (value) {
+      this.setOption.duration = value.duration || ''
+      this.setOption.position = value.position || 0
+      this.setOption.tail = value.tail
+    },
+    // 获取workid
+    GetRequest: function () {
+      var url = location.search // 获取url中"?"符后的字串
+      var theRequest = new Object()
+      if (url.indexOf('?') != -1) {
+        var str = url.substr(1),
+          strs = str.split('&')
+        for (var i = 0; i < strs.length; i++) {
+          theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1])
+        }
+      }
+      return theRequest
+    },
+    /* 时间转换 */
+    setTime: function (data) {
+      return moment(data).format('YYYY-MM-DD HH:mm:ss')
     }
+  },
+  components: {
+    viewer: viewer,
+    Header: Header
   }
+}
 </script>
 <style>
   @import "assets/work-detail.css";
   @import "assets/viewer.css";
-
   .c-analy-loadbox {
     width: 100%;
     height: 600px;
