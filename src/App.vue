@@ -83,7 +83,7 @@
                 </div>
                 <div class="c-res-info__profile__line" v-if="renderData.content.tbkNodes">
                   <span>教材章节：</span>
-                  <span class="c-res-info__profile__line-detail" v-for="item in renderData.content.tbkNodes[0].path">{{item.name}}/</span>
+                  <span class="c-res-info__profile__line-detail" v-for="(item,index) in renderData.content.tbkNodes[0].path"><span v-if="index">/</span>{{item.name}}</span>
                 </div>
               </div>
             </div>
