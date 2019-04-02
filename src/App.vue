@@ -133,6 +133,16 @@ export default {
     if (_this.workId || _this.taskId) {
       _this.getWorkDetail()
     }
+    let _hmt = _hmt || [];
+    (function () {
+      document.getElementById('baiduTJ') &&
+      document.getElementById('baiduTJ').remove()
+      let hm = document.createElement('script')
+      hm.id = 'baiduTJ'
+      hm.src = 'https://hm.baidu.com/hm.js?c83b76b30e31dbdf3c5f8c3457bd7209'
+      let s = document.getElementsByTagName('script')[0]
+      s.parentNode.insertBefore(hm, s)
+    })()
   },
   mounted () {
     let _this = this
