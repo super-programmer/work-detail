@@ -170,18 +170,12 @@ export default {
         e.returnValue = false
         return false
       }
-      /* window.onunload = function(e){
-           _this.setWorkDetail();
-           e = e || window.event;
-           e.returnValue = false;
-           return false;
-         } */
     } else {
       document.title = '查看作业'
     }
   },
   methods: {
-    // 进入页面拉去数据
+    // 进入页面拉取数据
     getWorkDetail: function () {
       let _this = this
       axios.interceptors.request.use(config => {
@@ -343,11 +337,6 @@ export default {
           window.history.go(-1)
         }
       })
-      /* axios.post(`https://api.yunguxt.com/work/home/watch/${this.workId}/stopped`, this.setOption).then(res => {
-           if(num === 10){
-           }
-           window.history.go(-1);
-         }) */
       return '44'
     },
     setData: function () {

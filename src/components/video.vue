@@ -14,16 +14,16 @@ export default {
       name: `${this.filedata.name}`,
       poster: `${this.filedata.baseUrl}${this.filedata.poster}`,
       timer: '',
-      flashHtml:''
+      flashHtml: ''
     }
   },
   mounted () {
-    let fls = this.flashChecker();
-    /*只有安装过flash初始化*/
-    if(fls.f) {
+    let fls = this.flashChecker()
+    /* 只有安装过flash初始化 */
+    if (fls.f) {
       this.initPlayer()
-    }else{
-      window.getFlashLink = function(){
+    } else {
+      window.getFlashLink = function () {
         window.open('https://get.adobe.com/cn/flashplayer/')
       }
       this.flashHtml = `<div class="install-flash">
@@ -61,7 +61,7 @@ export default {
           video: `${_this.src}`, // 视频地址
           loaded: 'loadedHandler1'
         }
-        loadedmetadata = function loadedmetadata() {
+        loadedmetadata = function loadedmetadata () {
           let metaData = player.getMetaDate()
           playertime = metaData['duration']
         }
@@ -87,39 +87,39 @@ export default {
         // window.pauseHandler = pauseHandler
         window.player = new ckplayer(videoObject)
         window.loadedHandler1 = function () {
-          player.addListener('play', playHandler) // 监听暂停播放
-          player.addListener('pause', pauseHandler) // 监听暂停播放
-          player.addListener('time', timeUpdateHandler) // 监听播放时间
-          player.addListener('loadedmetadata', loadedmetadata) // 监听元数据
+          player.addListener('play', 'playHandler',1) // 监听暂停播放
+          player.addListener('pause', 'pauseHandler',1) // 监听暂停播放
+          player.addListener('time', 'timeUpdateHandler',1) // 监听播放时间
+          player.addListener('loadedmetadata', 'loadedmetadata',1)// 监听元数据
         }
       }, 100)
     },
-    flashChecker(){
-      var hasFlash = 0;　　　　 //是否安装了flash
-      var flashVersion = 0;　　 //flash版本
-      if(document.all) {
-        var swf = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-        if(swf) {
-          hasFlash = 1;
-          let VSwf = swf.GetVariable("$version");
-          flashVersion = parseInt(VSwf.split(" ")[1].split(",")[0]);
+    flashChecker () {
+      var hasFlash = 0　　　　 // 是否安装了flash
+      var flashVersion = 0　　 // flash版本
+      if (document.all) {
+        var swf = new ActiveXObject('ShockwaveFlash.ShockwaveFlash')
+        if (swf) {
+          hasFlash = 1
+          let VSwf = swf.GetVariable('$version')
+          flashVersion = parseInt(VSwf.split(' ')[1].split(',')[0])
         }
       } else {
-        if(navigator.plugins && navigator.plugins.length > 0) {
-          var swf = navigator.plugins["Shockwave Flash"];
-          if(swf) {
-            hasFlash = 1;
-            var words = swf.description.split(" ");
-            for(var i = 0; i < words.length; ++i) {
-              if(isNaN(parseInt(words[i]))) continue;
-              flashVersion = parseInt(words[i]);
+        if (navigator.plugins && navigator.plugins.length > 0) {
+          var swf = navigator.plugins['Shockwave Flash']
+          if (swf) {
+            hasFlash = 1
+            var words = swf.description.split(' ')
+            for (var i = 0; i < words.length; ++i) {
+              if (isNaN(parseInt(words[i]))) continue
+              flashVersion = parseInt(words[i])
             }
           }
         }
       }
-      return { f: hasFlash, v: flashVersion };
+      return { f: hasFlash, v: flashVersion }
     },
-    getFlashLink(){
+    getFlashLink () {
       window.open('https://get.adobe.com/cn/flashplayer/')
     }
   }
